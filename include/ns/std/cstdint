@@ -1,0 +1,103 @@
+// vim: set ft=cpp:
+#ifndef NS_STD_CSTDINT_
+#define NS_STD_CSTDINT_
+
+#include <limits.h>
+#include <stddef.h>
+#include <ns/std/type_traits>
+
+namespace NS_STD {
+
+template <typename... Ts>
+constexpr bool AnyOfGivenBits(int targetBits) {
+    return ((CHAR_BIT*sizeof(Ts) == targetBits) || ...);
+}
+#if A
+#if CHAR_BIT == 8
+// guaranteed, because sizeof(char) is always 1
+using int8_t = char;
+using uint8_t = unsigned char;
+#endif
+
+// \brief The number of bits in a byte.
+/*constexpr int CHAR_BIT = []() {
+    unsigned char value = ~0U;
+    int bits = 0;
+    while (value) {
+        value >>= 1;
+        bits++;
+    }
+    return bits;
+}();
+*/
+/*
+// \brief The signed integer type of the result of subtracting two pointers.
+using ptrdiff_t = decltype(reinterpret_cast<char*>(nullptr) - reinterpret_cast<char*>(nullptr));
+
+// \brief The unsigned integer type of the result of the sizeof operator as
+//        well as the sizeof... operator and the alignof operator.
+using size_t = decltype(sizeof(int))
+
+template < class T >
+concept integral = is_integral_v<T>;
+
+template <typename T>
+concept IntegerType = integral<T>;
+
+template <typename T>
+concept IntegerOfSize = integral<T> && (sizeof(T) == sizeof(int));
+
+
+template <typename T>
+concept SignedIntegerOfSize = IntegerOfSize<T> && is_signed_v<T>;
+
+template <typename T>
+concept UnsignedIntegerOfSize = IntegerOfSize<T> && is_unsigned_v<T>;
+
+template <typename T, size_t Bytes>
+concept SizedInteger = sizeof(T) == Bytes;
+
+template <typename T>
+requires SignedIntegerOfSize<T>
+using sized_signed_t = T;
+
+template <typename T>
+requires UnsignedIntegerOfSize<T>
+using sized_unsigned_t = T;
+
+using int8_t = sized_signed_t<char, 1>;
+using uint8_t = sized_unsigned_t<unsigned char, 1>;
+using int16_t = sized_signed_t<short, 2>;
+using uint16_t = sized_unsigned_t<unsigned short, 2>;
+using int32_t = sized_signed_t<int, 4>;
+using uint32_t = sized_unsigned_t<unsigned, 4>;
+using int64_t = sized_signed_t<long long, 8>;
+using uint64_t = sized_unsigned_t<unsigned long long, 8>;
+
+using int_least8_t = int8_t;
+using uint_least8_t = uint8_t;
+using int_least16_t = int16_t;
+using uint_least16_t = uint16_t;
+using int_least32_t = int32_t;
+using uint_least32_t = uint32_t;
+using int_least64_t = int64_t;
+using uint_least64_t = uint64_t;
+
+using int_fast8_t = int8_t;
+using uint_fast8_t = uint8_t;
+using int_fast16_t = int16_t;
+using uint_fast16_t = uint16_t;
+using int_fast32_t = int32_t;
+using uint_fast32_t = uint32_t;
+using int_fast64_t = int64_t;
+using uint_fast64_t = uint64_t;
+
+using intptr_t = std::ptrdiff_t;
+using uintptr_t = std::make_unsigned_t<std::ptrdiff_t>;
+
+using intmax_t = long long;
+using uintmax_t = unsigned long long;
+*/
+}  // namespace NS_STD
+
+#endif  // NS_STD_CSTDINT_

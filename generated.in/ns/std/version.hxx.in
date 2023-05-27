@@ -1,0 +1,11 @@
+#ifndef NS_STD_VERSION_HXX_
+#define NS_STD_VERSION_HXX_
+namespace ns::std {
+
+constexpr const char* kProjectName = "@PROJECT_NAME@";
+constexpr unsigned int kVersionMajor = @PROJECT_VERSION_MAJOR@;
+constexpr unsigned int kVersionMinor = @PROJECT_VERSION_MINOR@;
+constexpr unsigned int kVersionPatch = @PROJECT_VERSION_PATCH@;
+
+}  // namespace ns::std
+#endif  // NS_STD_VERSION_HXX_
