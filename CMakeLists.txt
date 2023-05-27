@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project(ns_std VERSION 1.0.0 LANGUAGES CXX)
 
-option(NS_SYSTEM_STD
+option(NS_STD_SYSTEM
     "System std; define ${PROJECT_NAME} directly within the std namespace"
     OFF
 )
@@ -42,7 +42,7 @@ target_sources(ns_std
     PRIVATE 
         src/dummy.cxx
 )
-if(NS_SYSTEM_STD)
+if(NS_STD_SYSTEM)
     target_include_directories(ns_std
         PUBLIC
             include/ns/std
