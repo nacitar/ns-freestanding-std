@@ -84,6 +84,7 @@ else()
         "id ${CMAKE_CXX_COMPILER_ID}.")
 endif()
 #target_compile_options(ns_std PRIVATE -nostdinc++)
+
 # Testing
 include(CTest)
 set(testing_default OFF)
@@ -91,6 +92,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(testing_default ON)  # when building this specifically
 endif()
 option(NS_STD_BUILD_TESTING "Enable ns_std tests" ${testing_default})
+
 if(NS_STD_BUILD_TESTING)
     foreach(source_file
         simple_test.cxx

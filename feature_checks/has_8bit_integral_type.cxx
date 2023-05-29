@@ -1,5 +1,5 @@
-#include <feature_check/any_type_with_bit_size.hxx>
+#include <feature_check_common.hxx>
 static_assert(
-    any_type_with_bit_size<8>(StandardIntegralTypes{}),
+    AnyStandardIntegralTypeOfBitSize<8>(),
     "None of the integral types is exactly 8 bits."
 );

@@ -38,7 +38,7 @@
       "cacheVariables": {
         "MCU": "atmega32u4",
         "F_CPU": "16000000UL",
-        "NS_SYSTEM_STD": "ON"
+        "NS_STD_SYSTEM": "ON"
       }
     },
     {
