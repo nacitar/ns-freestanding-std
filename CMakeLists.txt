@@ -45,7 +45,7 @@ target_sources(ns_std
 if(NS_STD_SYSTEM)
     target_include_directories(ns_std
         PUBLIC
-            include/ns/std
+            include/ns/std  # doesn't include generated files
     )
     set(NS_STD_NAMESPACE "std")
 else()
