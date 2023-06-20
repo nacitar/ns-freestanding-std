@@ -1,2 +1,4 @@
 union Union { };
-static_assert(__is_union(Union), "__is_union() doesn't seem to be working properly.");
+class Class { };
+static_assert(__is_union(Union), "__is_union() gave a false negative.");
+static_assert(!__is_union(Class), "__is_union() gave a false positive.");

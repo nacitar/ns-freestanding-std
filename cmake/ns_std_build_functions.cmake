@@ -46,9 +46,9 @@ function(ns_std_compilation_test target_name source_file)
         )
     endif()
     string(REGEX MATCH "_fail(s)?" IS_FAIL ${TEST_SUFFIX})
-    # Running unit tests built for avr is non-trivial, so using
-    # static assertions and simply testing that it compiles is preferred.
-    add_executable(${target_name} EXCLUDE_FROM_ALL ${source_file})
+    # Running unit tests built for avr is non-trivial, so using static
+    # assertions and simply testing that it compiles as a library is preferred.
+    add_library(${target_name} STATIC EXCLUDE_FROM_ALL ${source_file})
     add_test(
         NAME ${target_name}_compile
         COMMAND

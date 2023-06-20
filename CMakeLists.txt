@@ -18,9 +18,10 @@ foreach(source_file
     has_16bit_integral_type.cxx
     has_32bit_integral_type.cxx
     has_64bit_integral_type.cxx
+    has_is_base_of_intrinsic.cxx
+    has_is_class_intrinsic.cxx
     has_is_enum_intrinsic.cxx
     has_is_union_intrinsic.cxx
-    has_is_class_intrinsic.cxx
 )
     ns_std_feature_check(NS_STD_FEATURE ${source_file})
 endforeach()
@@ -98,6 +99,7 @@ option(NS_STD_BUILD_TESTING "Enable ns_std tests" ${testing_default})
 
 if(NS_STD_BUILD_TESTING)
     foreach(source_file
+        is_base_of_test.cxx
         simple_test.cxx
     )
         get_filename_component(test_base_name ${source_file} NAME_WE)
