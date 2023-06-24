@@ -22,6 +22,8 @@ foreach(source_file
     has_is_class_intrinsic.cxx
     has_is_enum_intrinsic.cxx
     has_is_union_intrinsic.cxx
+    has_is_constructible_intrinsic.cxx
+    has_has_trivial_destructor_intrinsic.cxx
 )
     ns_std_feature_check(NS_STD_FEATURE ${source_file})
 endforeach()
