@@ -351,16 +351,50 @@ struct is_reference<T&&> : true_type {};
 template <class T>
 constexpr bool is_reference_v = is_reference<T>::value;
 
-// TODO: is_arithmetic
-// TODO: is_fundamental
-// TODO: is_object
-// TODO: is_scalar
-// TODO: is_compound
 
+// is_arithmetic
+template<typename T>
+struct is_arithmetic : integral_constant<bool, 
+                            is_integral<T>::value || is_floating_point<T>::value> 
+{};
+template<typename T>
+inline constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
 
-// is_member_pointer
-// TODO: remove helper?  is the remove_cv even needed?
-template<class T>
+// is_fundamental
+template<typename T>
+struct is_fundamental : integral_constant<bool,
+                            is_arithmetic<T>::value || 
+                            is_void<T>::value || 
+                            is_null_pointer<T>::value>
+{};
+template<typename T>
+inline constexpr bool is_fundamental_v = is_fundamental<T>::value;
+
+// is_compound
+template<typename T>
+struct is_compound : integral_constant<bool, !is_fundamental<T>::value>
+{};
+template<typename T>
+inline constexpr bool is_compound_v = is_compound<T>::value;
+
+// is_object
+template<typename T>
+struct is_object : conditional_t<is_function<T>::value || 
+                                 is_void<T>::value || 
+                                 is_reference<T>::value, 
+                                 false_type, 
+                                 true_type> {};
+template<>
+struct is_object<void> : false_type {};
+template<typename T>
+struct is_object<T&> : false_type {};
+template<typename T>
+struct is_object<T&&> : false_type {};
+template<typename T>
+inline constexpr bool is_object_v = is_object<T>::value;
+
+// is_member_pointer (old impl too)
+/*template<class T>
 struct is_member_pointer_helper : false_type {};
 template<class T, class U>
 struct is_member_pointer_helper<T U::*> : true_type {};
@@ -368,8 +402,28 @@ template<class T>
 struct is_member_pointer
 : is_member_pointer_helper<typename remove_cv<T>::type> {};
 template <class T>
-constexpr bool is_member_pointer_v = is_member_pointer<T>::value;
+constexpr bool is_member_pointer_v = is_member_pointer<T>::value;*/
+template<class T>
+struct is_member_pointer : false_type {};
 
+template<class T, class U>
+struct is_member_pointer<T U::*> : true_type {};
+
+template <class T>
+constexpr bool is_member_pointer_v = is_member_pointer<typename remove_cv<T>::type>::value;
+
+
+// is_scalar
+template<typename T>
+struct is_scalar : integral_constant<bool,
+                            is_arithmetic<T>::value || 
+                            is_enum<T>::value || 
+                            is_pointer<T>::value ||
+                            is_member_pointer<T>::value ||
+                            is_null_pointer<T>::value>
+{};
+template<typename T>
+inline constexpr bool is_scalar_v = is_scalar<T>::value;
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -553,6 +607,11 @@ template <class T, class... Args>
 inline constexpr bool is_constructible_v = is_constructible<T, Args...>::value;
 #endif  // NS_STD_FEATURE_HAS_IS_CONSTRUCTIBLE_INTRINSIC
 
+template <typename T>
+struct is_copy_constructible : is_constructible<T, const T&> {};
+
+template <typename T>
+inline constexpr bool is_copy_constructible_v = is_copy_constructible<T>::value;
 
 // remove_extent
 template <class T>
@@ -585,6 +644,80 @@ struct remove_all_extents<T[N]> {
 };
 template <class T>
 using remove_all_extents_t = typename remove_all_extents<T>::type;
+
+// common_reference
+
+// Basic building block for common_reference
+template<typename... Ts>
+struct basic_common_reference {};
+
+// Forward declaration
+template<typename T, typename U, typename... Vs>
+struct common_reference {};
+
+// Primary definition of common_reference_t
+template<typename... Ts>
+using common_reference_t = typename common_reference<Ts...>::type;
+
+// Helper concept
+template<typename T, typename U>
+concept HasCommonReference = requires { typename common_reference<T, U>::type; };
+
+// Specialization of common_reference for two types
+template<typename T, typename U>
+requires HasCommonReference<T, U>
+struct common_reference<T, U> {
+    using type = typename common_reference<T, U>::type;
+};
+
+template<typename T, typename U>
+requires (!HasCommonReference<T, U>) && requires {
+    typename common_reference<
+        add_lvalue_reference_t<T>,
+        add_lvalue_reference_t<U>>::type;
+}
+struct common_reference<T, U> {
+    using type = remove_reference_t<
+        typename common_reference<
+            add_lvalue_reference_t<T>,
+            add_lvalue_reference_t<U>>::type>;
+};
+
+// Recursive case for common_reference
+template<typename T, typename U, typename... Vs>
+requires HasCommonReference<T, U>
+struct common_reference<T, U, Vs...> {
+    using type = common_reference_t<
+        common_reference_t<T, U>, Vs...>;
+};
+
+// common_reference with lvalue references
+template<typename T, typename U>
+struct common_reference<T&, U&> {
+    using type = add_lvalue_reference_t<
+        common_reference_t<remove_reference_t<T>, remove_reference_t<U>>>;
+};
+
+// common_reference with rvalue references
+template<typename T, typename U>
+struct common_reference<T&&, U&&> {
+    using type = add_rvalue_reference_t<
+        common_reference_t<remove_reference_t<T>, remove_reference_t<U>>>;
+};
+
+// common_reference with lvalue reference and rvalue reference
+template<typename T, typename U>
+struct common_reference<T&, U&&> {
+    using type = add_lvalue_reference_t<
+        common_reference_t<remove_reference_t<T>, remove_reference_t<U>>>;
+};
+
+// common_reference with rvalue reference and lvalue reference
+template<typename T, typename U>
+struct common_reference<T&&, U&> {
+    using type = add_lvalue_reference_t<
+        common_reference_t<remove_reference_t<T>, remove_reference_t<U>>>;
+};
 
 }  // namespace NS_STD
 

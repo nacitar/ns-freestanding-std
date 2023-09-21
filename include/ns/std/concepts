@@ -1,0 +1,157 @@
+// vim: set ft=cpp:
+#ifndef NS_STD_CONCEPTS_
+#define NS_STD_CONCEPTS_
+
+#include <ns/std/type_traits>
+
+namespace NS_STD {
+
+// Comparison Concepts
+template<class T, class U>
+concept same_as = is_same_v<T, U>;
+
+template<class T, class U>
+concept derived_from = is_base_of_v<U, T>;
+
+template<class T, class U>
+concept convertible_to = is_convertible_v<T, U>;
+
+template<class T>
+concept integral = is_integral_v<T>;
+
+template<class T>
+concept signed_integral = integral<T> && is_signed_v<T>;
+
+template<class T>
+concept unsigned_integral = integral<T> && !is_signed_v<T>;
+
+template<class T>
+concept floating_point = is_floating_point_v<T>;
+
+// ... 
+
+// Concept to check if a type is swappable
+template<class T>
+concept swappable = requires(T& a, T& b) {
+    swap(a, b);
+};
+
+// Concept to check if a type is swappable with another type
+template<class T, class U>
+concept swappable_with = 
+    swappable<T> &&
+    swappable<U> &&
+    requires(T& t, U& u) {
+        swap(t, u);
+        swap(u, t);
+    };
+
+// ... You would continue adding more concepts as per the C++20 standard
+
+
+// Concept to check if a type is destructible
+template<class T>
+concept destructible = is_nothrow_destructible_v<T>;
+
+// Concept to check if a type is constructible from given argument types
+template<class T, class... Args>
+concept constructible_from = destructible<T> && is_constructible_v<T, Args...>;
+
+// Concept to check if a type is default initializable
+template<class T>
+concept default_initializable = constructible_from<T> && requires { T{}; };
+
+
+// move_constructible
+template <typename T>
+concept move_constructible = 
+    constructible_from<T, T&&> &&      // T is constructible from an rvalue of type T
+    requires(T u) {
+        { T(move(u)) } noexcept;   // The move construction doesn't throw
+    };
+
+
+// copy_constructible
+template <typename T>
+concept copy_constructible = 
+    move_constructible<T> &&      // T is move_constructible
+    constructible_from<T, const T&> &&   // T is constructible from an lvalue of type const T
+    !is_copy_constructible_v<T> && is_copy_constructible_v<T>; 
+    // Check that copy constructor isn't explicitly deleted.
+    // The seemingly redundant check works because a deleted copy constructor can still
+    // cause the trait to be true due to being declared, but will cause the second part to be false.
+
+
+template< class T, class U >
+concept common_reference_with =
+  same_as<common_reference_t<T, U>, common_reference_t<U, T>> &&
+  convertible_to<T, common_reference_t<T, U>> &&
+  convertible_to<U, common_reference_t<T, U>>;
+
+template <typename T, typename U>
+concept assignable_from =
+  requires(T t, U u) {
+    { t = u } -> same_as<T>;
+  } &&
+  common_reference_with<
+    const remove_cvref_t<T>&,
+    const remove_cvref_t<U>&
+  >;
+
+// Concept to check if a type is movable
+
+template<class T>
+concept movable =
+    is_object_v<T> &&
+    move_constructible<T> &&
+    assignable_from<T&, T> &&
+    swappable<T>;
+
+// Concept to check if a type is copyable
+template<class T>
+concept copyable =
+    copy_constructible<T> &&
+    movable<T> &&
+    assignable_from<T&, const T&> &&
+    assignable_from<const T&, T>;
+// Concept to check if a type is semiregular
+template<class T>
+concept semiregular = 
+    copyable<T> &&
+    default_initializable<T>;
+
+// equality_comparable
+
+template<typename T>
+concept equality_comparable = 
+  requires(T a, T b) {
+    { a == b } -> convertible_to<bool>;
+    { a != b } -> convertible_to<bool>;
+  };
+
+template<typename T, typename U>
+concept equality_comparable_with =
+  equality_comparable<T> &&
+  equality_comparable<U> &&
+  common_reference_with<const remove_reference_t<T>&, const remove_reference_t<U>&> &&
+  equality_comparable<common_reference_t<const remove_reference_t<T>&, const remove_reference_t<U>&>> &&
+  requires(const remove_reference_t<T>& a, const remove_reference_t<U>& b) {
+    { a == b } -> convertible_to<bool>;
+    { a != b } -> convertible_to<bool>;
+    { b == a } -> convertible_to<bool>;
+    { b != a } -> convertible_to<bool>;
+  };
+
+// Concept to check if a type is regular
+template<class T>
+concept regular = 
+    semiregular<T> &&
+    equality_comparable<T>;
+
+// ... You would continue adding more concepts as per the C++20 standard
+
+
+}  // namespace NS_STD
+
+
+#endif  // NS_STD_CONCEPTS_

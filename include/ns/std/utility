@@ -1,0 +1,10 @@
+// vim: set ft=cpp:
+#ifndef NS_STD_UTILITY_
+#define NS_STD_UTILITY_
+namespace NS_STD {
+
+// TODO: declval should be moved here, from type_traits
+
+}  // namespace NS_STD
+
+#endif  // NS_STD_UTILITY_

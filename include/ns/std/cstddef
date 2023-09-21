@@ -4,6 +4,7 @@
 // [cstddef.syn]/17.2.1 (C++20): Provides <cstddef> synopsys.
 
 #include <stddef.h>  // NULL, offsetof(), ::ptrdiff_t, ::size_t, ::max_align_t
+                     // NOTE: also gives wchar_t, which this shouldn't have.
 
 namespace NS_STD {
 

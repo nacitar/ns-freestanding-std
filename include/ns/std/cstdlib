@@ -1,0 +1,96 @@
+// vim: set ft=cpp:
+#ifndef NS_STD_CSTDLIB_
+#define NS_STD_CSTDLIB_
+
+// Start by including the relevant C header
+#include <stdlib.h>
+
+// Now, we start our namespace block. 
+// Everything from the C header that we want to use in C++ code should be declared inside this block.
+namespace NS_STD {
+
+    // C++ versions of size_t and div_t types
+    using ::size_t;
+    using ::div_t;
+    using ::ldiv_t;
+
+    //using ::lldiv_t;
+    //using ::lldiv;  // Since C++11
+    //using ::llabs;  // Since C++11
+
+    using ::abort;
+    using ::abs;
+    using ::atexit;
+    using ::atof;
+    using ::atoi;
+    using ::atol;
+    using ::bsearch;
+    using ::div;
+    using ::exit;
+    using ::getenv;
+    using ::labs;
+    using ::ldiv;
+    using ::qsort;
+    using ::strtod;
+    using ::strtol;
+    using ::strtoul;
+    using ::system;
+
+    //using ::ptrdiff_t;
+
+    // integer comparison functions (since C++20)
+    //using ::imaxabs;
+    //using ::imaxdiv;
+    //using ::wcstoumax;
+    //using ::wcstoimax;
+
+    // exit functions
+    //using ::_Exit;  // Since C++11
+    //using ::quick_exit;
+    //using ::at_quick_exit;
+    using ::abort;
+    using ::atexit;
+    using ::exit;
+    using ::getenv;
+
+    // Multibyte/wide character conversion functions
+    //using ::mblen;
+    //using ::mbtowc;
+    //using ::wctomb;
+
+    // Multibyte/wide string conversion functions
+    //using ::mbstowcs;
+    //using ::wcstombs;
+
+    // Communication with the environment
+    using ::system;
+
+    // Pseudo-random sequence generation functions
+    using ::rand;
+    using ::srand;
+
+    // Heap management functions
+    using ::calloc;
+    using ::free;
+    using ::malloc;
+    using ::realloc;
+
+    
+    //using ::atoll;
+    //using ::llabs;
+    //using ::lldiv;
+    //using ::strtof;
+    //using ::strtold;
+    //using ::strtoll;
+    //using ::strtoull;
+
+    //using ::aligned_alloc;
+
+
+    //using ::nullptr_t;
+
+    //using ::max_align_t;
+
+} // namespace NS_STD
+
+#endif  // NS_STD_CSTDLIB_
