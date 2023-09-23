@@ -2,6 +2,7 @@
 #ifndef NS_STD_CONCEPTS_
 #define NS_STD_CONCEPTS_
 
+#include <ns/std/ns-std-detail/_core.hxx>
 #include <ns/std/type_traits>
 
 namespace NS_STD {
@@ -15,9 +16,6 @@ concept derived_from = is_base_of_v<U, T>;
 
 template<class T, class U>
 concept convertible_to = is_convertible_v<T, U>;
-
-template<class T>
-concept integral = is_integral_v<T>;
 
 template<class T>
 concept signed_integral = integral<T> && is_signed_v<T>;
