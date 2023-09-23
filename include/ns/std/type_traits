@@ -250,21 +250,19 @@ template <> struct is_floating_point<long double> : true_type {};
 template <class T>
 constexpr bool is_floating_point_v = is_floating_point<T>::value;
 
-// is_array  TODO specialization is weird?
-template <class T>
-struct is_array : false_type {};
+// is_array
+template <class T> struct is_array : false_type {};
 template <class T> struct is_array<T[]> : true_type {};
 template <class T, size_t N> struct is_array<T[N]> : true_type {};
-template <class T>
-constexpr bool is_array_v = is_array<T>::value;
+template <class T> constexpr bool is_array_v = is_array<T>::value;
 
-// is_pointer  TODO: no helper
-template <class T> struct is_pointer_helper : false_type {};
-template <class T> struct is_pointer_helper<T*> : true_type {};
-template <class T>
-struct is_pointer : is_pointer_helper<remove_cv_t<T>>::type {};
-template <class T>
-constexpr bool is_pointer_v = is_pointer<T>::value;
+// is_pointer
+template <class T> struct is_pointer : std::false_type {};
+template <class T> struct is_pointer<T*> : std::true_type {};
+template <class T> struct is_pointer<T* const> : std::true_type {};
+template <class T> struct is_pointer<T* volatile> : std::true_type {};
+template <class T> struct is_pointer<T* const volatile> : std::true_type {};
+template <class T> constexpr bool is_pointer_v = is_pointer<T>::value;
 
 // is_lvalue_reference
 template <class T>
