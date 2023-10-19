@@ -18,11 +18,18 @@ foreach(source_file
     has_16bit_integral_type.cxx
     has_32bit_integral_type.cxx
     has_64bit_integral_type.cxx
+    has_is_aggregate_intrinsic.cxx
     has_is_base_of_intrinsic.cxx
     has_is_class_intrinsic.cxx
     has_is_enum_intrinsic.cxx
     has_is_union_intrinsic.cxx
     has_is_constructible_intrinsic.cxx
+    has_is_empty_intrinsic.cxx
+    has_is_final_intrinsic.cxx
+    has_is_polymorphic_intrinsic.cxx
+    has_is_standard_layout_intrinsic.cxx
+    has_is_trivial_intrinsic.cxx
+    has_is_trivially_copyable_intrinsic.cxx
     has_has_trivial_destructor_intrinsic.cxx
 )
     ns_std_feature_check(NS_STD_FEATURE ${source_file})
