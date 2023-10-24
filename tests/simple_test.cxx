@@ -65,8 +65,28 @@ static_assert(!NS_STD::is_member_object_pointer_v<void (Foo::*)()>, "Should be f
 static_assert(!NS_STD::is_member_object_pointer_v<int>, "Should be false for non-member types");
 
 
-static_assert(std::is_const<const int>::value, "const int should be const");
-static_assert(!std::is_const<int>::value, "int should not be const");
+static_assert(NS_STD::is_const<const int>::value, "const int should be const");
+static_assert(!NS_STD::is_const<int>::value, "int should not be const");
 
-static_assert(std::is_volatile<volatile int>::value, "volatile int should be volatile");
-static_assert(!std::is_volatile<int>::value, "int should not be volatile");
+static_assert(NS_STD::is_volatile<volatile int>::value, "volatile int should be volatile");
+static_assert(!NS_STD::is_volatile<int>::value, "int should not be volatile");
+
+static_assert(NS_STD::is_bounded_array<int[5]>::value, "int[5] should be a bounded array");
+static_assert(!NS_STD::is_bounded_array<int[]>::value, "int[] should not be a bounded array");
+static_assert(!NS_STD::is_bounded_array<int>::value, "int should not be a bounded array");
+static_assert(!NS_STD::is_bounded_array<Foo>::value, "Foo should not be a bounded array");
+
+static_assert(NS_STD::is_unbounded_array<int[]>::value, "int[] should be an unbounded array");
+static_assert(!NS_STD::is_unbounded_array<int[5]>::value, "int[5] should not be an unbounded array");
+static_assert(!NS_STD::is_unbounded_array<int>::value, "int should not be an unbounded array");
+
+struct DefaultConstructibleType {
+};
+
+struct NonDefaultConstructibleType {
+    private:
+    NonDefaultConstructibleType() {}
+};
+
+static_assert(NS_STD::is_default_constructible<DefaultConstructibleType>::value, "DefaultConstructibleType should be default constructible");
+static_assert(!NS_STD::is_default_constructible<NonDefaultConstructibleType>::value, "NonDefaultConstructibleType should not be default constructible");

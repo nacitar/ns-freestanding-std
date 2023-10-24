@@ -19,6 +19,7 @@ foreach(source_file
     has_32bit_integral_type.cxx
     has_64bit_integral_type.cxx
     has_is_aggregate_intrinsic.cxx
+    has_is_assignable_intrinsic.cxx
     has_is_base_of_intrinsic.cxx
     has_is_class_intrinsic.cxx
     has_is_enum_intrinsic.cxx
