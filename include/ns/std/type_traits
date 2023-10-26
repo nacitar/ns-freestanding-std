@@ -1,6 +1,10 @@
 // vim: set ft=cpp:
 #ifndef NS_STD_TYPE_TRAITS_
 #define NS_STD_TYPE_TRAITS_
+
+// TODO: skipped is_swappable_with and is_swappable because it would make
+// more sense to do that after implementating swap
+
 // [meta.type.synop]/20.15.3 (C++20): Provides <type_traits> synopsys.
 // Links to descriptions of the is_* traits within comments.
 // [meta.rqmts]/20.15.2 (C++20): Requirements for traits.
@@ -542,9 +546,6 @@ namespace detail
     struct is_destructible_impl<T, void_t<decltype(declval<T&>().~T())>> : true_type
     {
     };
-
-    template <typename T>
-    inline constexpr bool is_nothrow_destructible_impl = noexcept(declval<T&>().~T());
 }
 
 template <typename T>
@@ -554,10 +555,14 @@ template <typename T>
 inline constexpr bool is_destructible_v = is_destructible<T>::value;
 
 template <typename T>
-struct is_nothrow_destructible : bool_constant<detail::is_nothrow_destructible_impl<T>> {};
+struct is_nothrow_destructible 
+    : bool_constant<
+        is_destructible<T>::value && noexcept(declval<T&>().~T())
+      > {};
 
 template <typename T>
 inline constexpr bool is_nothrow_destructible_v = is_nothrow_destructible<T>::value;
+
 
 #ifdef NS_STD_FEATURE_HAS_IS_AGGREGATE_INTRINSIC
 template<class T>
@@ -603,6 +608,42 @@ template <typename T>
 inline constexpr bool is_trivially_destructible_v = is_trivially_destructible<T>::value;
 #endif  // NS_STD_FEATURE_HAS_HAS_TRIVIAL_DESTRUCTOR_INTRINSIC
 
+#ifdef NS_STD_FEATURE_HAS_HAS_UNIQUE_OBJECT_REPRESENTATIONS_INTRINSIC
+template <typename T>
+struct has_unique_object_representations : bool_constant<__has_unique_object_representations(T)> {};
+
+template <typename T>
+inline constexpr bool has_unique_object_representations_v = has_unique_object_representations<T>::value;
+#endif  // NS_STD_FEATURE_HAS_HAS_UNIQUE_OBJECT_REPRESENTATIONS_INTRINSIC
+
+#ifdef NS_STD_FEATURE_HAS_HAS_VIRTUAL_DESTRUCTOR_INTRINSIC
+template <typename T>
+struct has_virtual_destructor : bool_constant<__has_virtual_destructor(T)> {};
+
+template <typename T>
+inline constexpr bool has_virtual_destructor_v = has_virtual_destructor<T>::value;
+#endif  // NS_STD_FEATURE_HAS_HAS_VIRTUAL_DESTRUCTOR_INTRINSIC
+
+#ifdef NS_STD_FEATURE_HAS_IS_TRIVIALLY_ASSIGNABLE_INTRINSIC
+template <typename T, typename U>
+struct is_trivially_assignable : bool_constant<__is_trivially_assignable(T, U)> {};
+
+template <typename T, typename U>
+inline constexpr bool is_trivially_assignable_v = is_trivially_assignable<T, U>::value;
+
+template <typename T>
+using is_trivially_copy_assignable = is_trivially_assignable<T&, const T&>;
+
+template <typename T>
+inline constexpr bool is_trivially_copy_assignable_v = is_trivially_copy_assignable<T>::value;
+
+template <typename T>
+using is_trivially_move_assignable = is_trivially_assignable<T&, T&&>;
+
+template <typename T>
+inline constexpr bool is_trivially_move_assignable_v = is_trivially_move_assignable<T>::value;
+#endif  // NS_STD_FEATURE_HAS_IS_TRIVIALLY_ASSIGNABLE_INTRINSIC
+
 #ifdef NS_STD_FEATURE_HAS_IS_CONSTRUCTIBLE_INTRINSIC
 template <class T, class... Args>
 struct is_constructible : bool_constant<__is_constructible(T, Args...)> {};
@@ -629,8 +670,60 @@ struct is_move_constructible :
 
 template<class T>
 inline constexpr bool is_move_constructible_v = is_move_constructible<T>::value;
-
 #endif  // NS_STD_FEATURE_HAS_IS_CONSTRUCTIBLE_INTRINSIC
+
+#ifdef NS_STD_FEATURE_HAS_IS_TRIVIALLY_CONSTRUCTIBLE_INTRINSIC
+template <typename T, typename... Args>
+struct is_trivially_constructible : bool_constant<__is_trivially_constructible(T, Args...)> {};
+
+template <typename T, typename... Args>
+inline constexpr bool is_trivially_constructible_v = is_trivially_constructible<T, Args...>::value;
+
+template <typename T>
+struct is_trivially_default_constructible : is_trivially_constructible<T> {};
+
+template <typename T>
+inline constexpr bool is_trivially_default_constructible_v = is_trivially_default_constructible<T>::value;
+
+template <typename T>
+struct is_trivially_copy_constructible : is_trivially_constructible<T, const T&> {};
+
+template <typename T>
+inline constexpr bool is_trivially_copy_constructible_v = is_trivially_copy_constructible<T>::value;
+
+template <typename T>
+struct is_trivially_move_constructible : is_trivially_constructible<T, T&&> {};
+
+template <typename T>
+inline constexpr bool is_trivially_move_constructible_v = is_trivially_move_constructible<T>::value;
+#endif  // NS_STD_FEATURE_HAS_IS_TRIVIALLY_CONSTRUCTIBLE_INTRINSIC
+
+#ifdef NS_STD_FEATURE_HAS_IS_NOTHROW_CONSTRUCTIBLE_INTRINSIC
+template <typename T, typename... Args>
+struct is_nothrow_constructible : bool_constant<__is_nothrow_constructible(T, Args...)> {};
+
+template <typename T, typename... Args>
+inline constexpr bool is_nothrow_constructible_v = is_nothrow_constructible<T, Args...>::value;
+
+template <typename T>
+using is_nothrow_default_constructible = is_nothrow_constructible<T>;
+
+template <typename T>
+inline constexpr bool is_nothrow_default_constructible_v = is_nothrow_default_constructible<T>::value;
+
+template <typename T>
+using is_nothrow_copy_constructible = is_nothrow_constructible<T, const T&>;
+
+template <typename T>
+inline constexpr bool is_nothrow_copy_constructible_v = is_nothrow_copy_constructible<T>::value;
+
+template <typename T>
+using is_nothrow_move_constructible = is_nothrow_constructible<T, T&&>;
+
+template <typename T>
+inline constexpr bool is_nothrow_move_constructible_v = is_nothrow_move_constructible<T>::value;
+#endif  // NS_STD_FEATURE_HAS_IS_NOTHROW_CONSTRUCTIBLE_INTRINSIC
+
 
 #ifdef NS_STD_FEATURE_HAS_IS_ASSIGNABLE_INTRINSIC
 template<class T, class U>
@@ -638,8 +731,39 @@ struct is_assignable : integral_constant<bool, __is_assignable(T, U)> {};
 
 template<class T, class U>
 inline constexpr bool is_assignable_v = is_assignable<T, U>::value;
+
+template<class T>
+struct is_copy_assignable : is_assignable<T&, const T&> {};
+
+template<class T>
+inline constexpr bool is_copy_assignable_v = is_copy_assignable<T>::value;
+
+template<class T>
+struct is_move_assignable : is_assignable<T&, T&&> {};
+
+template<class T>
+inline constexpr bool is_move_assignable_v = is_move_assignable<T>::value;
 #endif  // NS_STD_FEATURE_HAS_IS_ASSIGNABLE_INTRINSIC
 
+#ifdef NS_STD_FEATURE_HAS_IS_NOTHROW_ASSIGNABLE_INTRINSIC
+template <typename T, typename U>
+struct is_nothrow_assignable : bool_constant<__is_nothrow_assignable(T, U)> {};
+
+template <typename T, typename U>
+inline constexpr bool is_nothrow_assignable_v = is_nothrow_assignable<T, U>::value;
+
+template <typename T>
+using is_nothrow_copy_assignable = is_nothrow_assignable<T&, const T&>;
+
+template <typename T>
+inline constexpr bool is_nothrow_copy_assignable_v = is_nothrow_copy_assignable<T>::value;
+
+template <typename T>
+using is_nothrow_move_assignable = is_nothrow_assignable<T&, T&&>;
+
+template <typename T>
+inline constexpr bool is_nothrow_move_assignable_v = is_nothrow_move_assignable<T>::value;
+#endif  // NS_STD_FEATURE_HAS_IS_NOTHROW_ASSIGNABLE_INTRINSIC
 
 // remove_extent
 template <class T>
